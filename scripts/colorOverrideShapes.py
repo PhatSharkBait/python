@@ -14,11 +14,12 @@ def change_colors(values):
     sels = cmds.ls(selection=True)
     for selection in sels:
         selectionShape = cmds.listRelatives(selection, s=True)
-        cmds.setAttr(selectionShape[0] + ".overrideEnabled", True)
-        cmds.setAttr(selectionShape[0] + ".overrideRGBColors", True)
-        cmds.setAttr(selectionShape[0] + ".overrideColorR", values[0])
-        cmds.setAttr(selectionShape[0] + ".overrideColorG", values[1])
-        cmds.setAttr(selectionShape[0] + ".overrideColorB", values[2])
+        for shape in selectionShape:
+            cmds.setAttr(selection + "|" + shape + ".overrideEnabled", True)
+            cmds.setAttr(selection + "|" + shape + ".overrideRGBColors", True)
+            cmds.setAttr(selection + "|" + shape + ".overrideColorR", values[0])
+            cmds.setAttr(selection + "|" + shape + ".overrideColorG", values[1])
+            cmds.setAttr(selection + "|" + shape + ".overrideColorB", values[2])
 
 
 if __name__ == '__main__':

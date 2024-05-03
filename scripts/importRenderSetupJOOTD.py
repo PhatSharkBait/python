@@ -10,13 +10,18 @@ def setupRenderLayers(renderSettingsFile):
 
 
 def createCustomShaders():
-    shadowShaderName = "aiShadowMatteAOV"
-    ambientOcclusionShaderName = "aiAmbientOcclusionAOV"
+    shadowMatteMaterial = "aiShadowMatteAOV"
+    ambientOcclusionMaterial = "aiAmbientOcclusionAOV"
 
-    shadowMatteMaterial = cmds.shadingNode('aiShadowMatte', name=shadowShaderName, asShader=True)
+    if not cmds.objExists(shadowMatteMaterial):
+        shadowMatteMaterial = cmds.shadingNode('aiShadowMatte', name=shadowMatteMaterial, asShader=True)
 
-    ambientOcclusionMaterial = (
-        cmds.shadingNode('aiAmbientOcclusion', name=ambientOcclusionShaderName, asShader=True))
+    cmds.setAttr(shadowMatteMaterial + ".indirectSpecularEnable", 1)
+
+
+    if not cmds.objExists(ambientOcclusionMaterial):
+        ambientOcclusionMaterial = (
+        cmds.shadingNode('aiAmbientOcclusion', name=ambientOcclusionMaterial, asShader=True))
 
     if not cmds.objExists("utilityFlatSG"):
         flatMaterial = cmds.shadingNode('aiFlat', name = "utilityFlat", asShader=True)
@@ -33,12 +38,16 @@ def connectCustomShaders(customShaders):
 
 def importRenderSettings():
 
-    renderSettingsFilePath = cmds.fileDialog2(selectFileFilter=".json", dialogStyle=2, fileMode=1)[0]
+    renderSettingsFilePath = cmds.fileDialog2(selectFileFilter="*.json", dialogStyle=2, fileMode=1)[0]
 
     if renderSettingsFilePath:
         customShaders = createCustomShaders()
         setupRenderLayers(renderSettingsFilePath)
         connectCustomShaders(customShaders)
+
+    #disable master layer
+    masterLayer = cmds.ls("defaultRenderLayer")[0]
+    cmds.setAttr(masterLayer + ".renderable", 0)
 
 
 def main():
